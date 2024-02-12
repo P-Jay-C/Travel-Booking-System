@@ -1,0 +1,10 @@
+server:
+  port: 8095
+
+
+
+# Eureka Client Configuration
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
