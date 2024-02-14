@@ -3,3 +3,28 @@ spring:
     name: user-service
   config:
     import: optional:configserver:http://localhost:8888
+
+  # Email service
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: azilakujeremiah@gmail.com
+    password: fkiewlctxmqiaqef
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411
+  tracing:
+    sampling:
+      probability: 1.0
+
+debug: true
+
+
