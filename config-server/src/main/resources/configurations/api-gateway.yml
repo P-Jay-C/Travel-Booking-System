@@ -25,3 +25,8 @@ spring:
             - Path=/auth/**
           filters:
             - AuthenticationFilter
+
+        - id: category-service
+          uri: lb://category-service
+          predicates:
+            - Path=/category/**
