@@ -1,6 +1,5 @@
-package com.amalitech.org.userservice.config;
+package com.amalitech.org.userservice.entity;
 
-import com.amalitech.org.userservice.entity.AppUser;
 import com.amalitech.org.userservice.Repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -19,7 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AppUser> credential = repository.findByUsername(username);
+        Optional<AppUser> credential = repository.findByEmail(username);
         return credential.map(CustomUserDetails::new).orElseThrow(() -> new UsernameNotFoundException("user not found with name :" + username));
     }
 }

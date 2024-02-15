@@ -1,8 +1,6 @@
 package com.amalitech.org.userservice.Controller;
-
-
-import com.amalitech.org.userservice.service.AuthService;
 import com.amalitech.org.userservice.entity.AppUser;
+import com.amalitech.org.userservice.service.UserService;
 import com.amalitech.org.userservice.user.dto.AuthRequest;
 import com.amalitech.org.userservice.user.dto.ChangePasswordRequest;
 import com.amalitech.org.userservice.util.Result;
@@ -23,7 +21,7 @@ import java.util.List;
 @RequestMapping("/auth")
 public class AuthController {
     @Autowired
-    private AuthService service;
+    private UserService service;
 
     @Autowired
     private AuthenticationManager authenticationManager;

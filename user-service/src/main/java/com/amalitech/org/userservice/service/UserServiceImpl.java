@@ -1,48 +1,50 @@
 package com.amalitech.org.userservice.service;
-import com.amalitech.org.userservice.exception.ObjectNotFoundException;
-import com.amalitech.org.userservice.entity.AppUser;
+
 import com.amalitech.org.userservice.Repository.UserRepository;
+import com.amalitech.org.userservice.entity.AppUser;
+import com.amalitech.org.userservice.exception.ObjectNotFoundException;
 import com.amalitech.org.userservice.user.dto.ChangePasswordRequest;
 import com.amalitech.org.userservice.user.dto.EmailDetails;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
 @Transactional
-public class AuthService {
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private JwtService jwtService;
 
     private final EmailService emailService;
-    public AuthService(UserRepository userRepository, EmailService emailService) {
+
+    public UserServiceImpl(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.emailService = emailService;
     }
 
-    public AppUser findById(ObjectId id){
-        return  userRepository.findById(id).orElseThrow(
-                () -> new ObjectNotFoundException("user", String.valueOf(id))
-        );
+    @Override
+    public AppUser findById(ObjectId id) {
+        return userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("user", String.valueOf(id)));
     }
 
-    public List<AppUser> findAll(){
+    @Override
+    public List<AppUser> findAll() {
         return userRepository.findAll();
     }
 
+    @Override
     public AppUser save(AppUser user) {
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user =  userRepository.save(user);
+        user = userRepository.save(user);
 
         // Send email alert
         EmailDetails emailDetails = EmailDetails.builder()
@@ -54,11 +56,11 @@ public class AuthService {
                         + "Best regards,\n The Best Travel Centre")  // Corrected line
                 .build();
 
-
         emailService.sendEmailAlert(emailDetails);
         return user;
     }
 
+    @Override
     public AppUser update(ObjectId id, AppUser update) {
         return userRepository.findById(id)
                 .map(user -> {
@@ -69,16 +71,17 @@ public class AuthService {
 
                     return this.userRepository.save(user);
                 })
-                .orElseThrow(()-> new ObjectNotFoundException("user", String.valueOf(id)));
-
+                .orElseThrow(() -> new ObjectNotFoundException("user", String.valueOf(id)));
     }
 
+    @Override
     public void delete(ObjectId id) {
         AppUser user = userRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("user", String.valueOf(id)));
         userRepository.deleteById(id);
     }
 
+    @Override
     public void changePassword(ObjectId userId, ChangePasswordRequest changePasswordRequest) {
         AppUser user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("user", String.valueOf(userId)));
@@ -116,11 +119,15 @@ public class AuthService {
 
         emailService.sendEmailAlert(emailDetails);
     }
+
+    @Override
     public String generateToken(String username) {
         return jwtService.generateToken(username);
     }
 
+    @Override
     public void validateToken(String token) {
         jwtService.validateToken(token);
     }
 }
+

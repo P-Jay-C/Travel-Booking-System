@@ -1,6 +1,7 @@
 package com.amalitech.org.userservice.config;
 
 
+import com.amalitech.org.userservice.entity.CustomUserDetailsService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.amalitech.org.userservice.config;
+package com.amalitech.org.userservice.entity;
 
 import com.amalitech.org.userservice.entity.AppUser;
 import org.springframework.security.core.GrantedAuthority;
