@@ -23,8 +23,8 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/auth/**
-          filters:
-            - AuthenticationFilter
+#          filters:
+##            - AuthenticationFilter
 
         - id: category-service
           uri: lb://category-service
