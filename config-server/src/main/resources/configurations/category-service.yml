@@ -1,10 +1,14 @@
 server:
   port: 8095
 
-
-
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/category-service
 # Eureka Client Configuration
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+
+debug: true
