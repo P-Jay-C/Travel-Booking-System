@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +95,7 @@ public class ExceptionHandlerAdvice {
 //    Result handleNoHandlerFoundException(NoHandlerFoundException ex) {
 //        return new Result(false, StatusCode.NOT_FOUND, "This API endpoint is not found.", ex.getMessage());
 //    }
+
     @ExceptionHandler({HttpClientErrorException.class, HttpServerErrorException.class})
     ResponseEntity<Result> handleRestClientException(HttpStatusCodeException ex) throws JsonProcessingException, JsonProcessingException {
 
