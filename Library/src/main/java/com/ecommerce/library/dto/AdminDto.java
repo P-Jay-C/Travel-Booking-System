@@ -19,11 +19,6 @@ public class AdminDto {
     private String username;
     @Size(min = 5, max = 10, message = "Password contains 5-10 characters")
     @NotEmpty(message = "Password is required")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "Password must be at least 8 characters with a combination of upper, lower, special characters, and numbers")
     private String password;
-    @NotEmpty(message = "Password is required")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "Password must be at least 8 characters with a combination of upper, lower, special characters, and numbers")
     private String repeatPassword;
 }

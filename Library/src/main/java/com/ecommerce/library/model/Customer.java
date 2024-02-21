@@ -28,8 +28,6 @@ public class Customer {
     @NotEmpty(message = "Email is required")
     private String username;
     @NotEmpty(message = "Password is required")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "Password must be at least 8 characters with a combination of upper, lower, special characters, and numbers")
     private String password;
     private String phoneNumber;
     private String address;

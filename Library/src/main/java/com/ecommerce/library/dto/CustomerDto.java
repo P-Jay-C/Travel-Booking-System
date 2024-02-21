@@ -21,10 +21,6 @@ public class CustomerDto {
     @NotEmpty(message = "Email is required")
     private String username;
     @Size(min = 3, max = 15, message = "Password contains 3-10 characters")
-    @NotEmpty(message = "Password is required")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "Password must be at least 8 characters with a combination of upper, lower, special characters, and numbers")
-
     private String password;
 
     @Size(min = 10, max = 15, message = "Phone number contains 10-15 characters")
@@ -32,8 +28,6 @@ public class CustomerDto {
 
     private String address;
     @NotEmpty(message = "Password is required")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "Password must be at least 8 characters with a combination of upper, lower, special characters, and numbers")
     private String confirmPassword;
     private City city;
     private String image;
