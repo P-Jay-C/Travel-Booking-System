@@ -31,6 +31,7 @@ public class Customer {
     private String password;
     private String phoneNumber;
     private String address;
+//    private boolean enabled;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "name", referencedColumnName = "id")
@@ -48,7 +49,7 @@ public class Customer {
     private List<Order> orders;
 
     public Customer() {
-        this.country = "VN";
+        this.country = "Ghana";
         this.cart = new ShoppingCart();
         this.orders = new ArrayList<>();
     }

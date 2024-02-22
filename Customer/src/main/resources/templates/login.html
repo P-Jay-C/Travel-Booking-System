@@ -53,10 +53,17 @@
                     </div>
                 </form>
                 <h3>Log In With Social Network</h3>
-                <ul class="icon-dang-nhap">
-                    <li><i class="fab fa-facebook-f"></i></li>
-                    <li><i class="fab fa-google"></i></li>
-                </ul>
+                <div class="social-login">
+                    <div class="social-icons">
+                        <a th:href="@{/oauth2/authorization/google}" class="social-login__icon fab fa-google">Google</a>
+                        <a href="#" class="social-login__icon fab fa-facebook">Facebook</a>
+                        <a href="#" class="social-login__icon fab fa-twitter">GitHub</a>
+                    </div>
+                </div>
+<!--                <ul class="icon-dang-nhap">-->
+<!--                    <li><i class="fab fa-facebook-f"></i></li>-->
+<!--                    <li><i class="fab fa-google"></i></li>-->
+<!--                </ul>-->
             </div>
         </div>
     </section>

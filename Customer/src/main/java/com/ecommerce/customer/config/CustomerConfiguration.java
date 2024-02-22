@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,8 +32,7 @@ public class CustomerConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder
-                = http.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 
         authenticationManagerBuilder
                 .userDetailsService(userDetailsService())
@@ -42,10 +42,14 @@ public class CustomerConfiguration {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests( author ->
+                .authorizeHttpRequests(author ->
                         author.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                                .requestMatchers("/*", "/product-detail/**").permitAll()
+                                .requestMatchers("/*", "/product-detail/**", "/shop/oauth2/authorization/google").permitAll()
                                 .requestMatchers("/shop/**", "/find-products/**").hasAuthority("CUSTOMER")
+                )
+                .oauth2Login(oauth2Login ->
+                        oauth2Login.loginPage("/login")
+
                 )
                 .formLogin(login ->
                         login.loginPage("/login")
@@ -53,6 +57,7 @@ public class CustomerConfiguration {
                                 .defaultSuccessUrl("/index", true)
                                 .permitAll()
                 )
+
                 .logout(logout ->
                         logout.invalidateHttpSession(true)
                                 .clearAuthentication(true)
@@ -63,8 +68,10 @@ public class CustomerConfiguration {
                 .authenticationManager(authenticationManager)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                )
-        ;
+                );
+
+
+
         return http.build();
     }
 
