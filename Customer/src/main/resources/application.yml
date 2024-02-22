@@ -11,6 +11,18 @@ spring:
     password: Jerry@123
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  # Email service
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: azilakujeremiah@gmail.com
+    password: ${MAIL_SECRET}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   # JPA
   jpa:
     generate-ddl: true

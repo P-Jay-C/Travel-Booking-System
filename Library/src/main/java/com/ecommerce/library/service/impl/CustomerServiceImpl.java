@@ -2,9 +2,11 @@ package com.ecommerce.library.service.impl;
 
 import com.ecommerce.library.dto.CustomerDto;
 import com.ecommerce.library.model.Customer;
+import com.ecommerce.library.model.EmailDetails;
 import com.ecommerce.library.repository.CustomerRepository;
 import com.ecommerce.library.repository.RoleRepository;
 import com.ecommerce.library.service.CustomerService;
+import com.ecommerce.library.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,7 @@ import java.util.Arrays;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final RoleRepository roleRepository;
-
+    private final EmailService emailService;
     @Override
     public Customer save(CustomerDto customerDto) {
         Customer customer = new Customer();
@@ -24,6 +26,18 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setPassword(customerDto.getPassword());
         customer.setUsername(customerDto.getUsername());
         customer.setRoles(Arrays.asList(roleRepository.findByName("CUSTOMER")));
+
+        // Send email alert
+        EmailDetails emailDetails = EmailDetails.builder()
+                .recipient(customer.getUsername())
+                .subject("ACCOUNT CREATION")
+                .messageBody("Dear " + customer.getFirstName() + " " + customer.getLastName() + ",\n\n"
+                        + "Congratulations! Your account has been successfully created.\n\n"
+                        + "Thank you for choosing our services.\n\n"
+                        + "Best regards,\n The Best Travel Centre")
+                .build();
+
+        emailService.sendEmailAlert(emailDetails);
         return customerRepository.save(customer);
     }
 
