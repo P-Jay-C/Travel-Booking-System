@@ -12,7 +12,6 @@
         <module name="Customer" />
         <module name="booking-service" />
         <module name="api-gateway" />
-        <module name="user-service" />
         <module name="Library" />
         <module name="Admin" />
         <module name="notification-service" />
@@ -20,6 +19,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="category-service" target="17" />
+      <module name="user-service" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

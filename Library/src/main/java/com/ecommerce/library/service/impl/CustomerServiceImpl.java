@@ -1,5 +1,6 @@
 package com.ecommerce.library.service.impl;
 
+import com.ecommerce.library.Exception.EmailNotActiveException;
 import com.ecommerce.library.dto.CustomerDto;
 import com.ecommerce.library.model.Customer;
 import com.ecommerce.library.model.EmailDetails;
@@ -25,6 +26,10 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setLastName(customerDto.getLastName());
         customer.setPassword(customerDto.getPassword());
         customer.setUsername(customerDto.getUsername());
+        customer.setAddress(customerDto.getAddress());
+        customer.setPhoneNumber(customerDto.getPhoneNumber());
+        customer.setCountry(customerDto.getCountry());
+
         customer.setRoles(Arrays.asList(roleRepository.findByName("CUSTOMER")));
 
         // Send email alert
@@ -37,7 +42,11 @@ public class CustomerServiceImpl implements CustomerService {
                         + "Best regards,\n The Best Travel Centre")
                 .build();
 
-        emailService.sendEmailAlert(emailDetails);
+        boolean emailSent = emailService.sendEmailAlert(emailDetails);
+
+        if (!emailSent) {
+            throw new EmailNotActiveException("Email not active");
+        }
         return customerRepository.save(customer);
     }
 
@@ -71,10 +80,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer update(CustomerDto dto) {
         Customer customer = customerRepository.findByUsername(dto.getUsername());
+        customer.setFirstName(dto.getFirstName());
+        customer.setLastName(dto.getLastName());
+        customer.setPassword(dto.getPassword());
+        customer.setUsername(dto.getUsername());
         customer.setAddress(dto.getAddress());
-        customer.setCity(dto.getCity());
-        customer.setCountry(dto.getCountry());
         customer.setPhoneNumber(dto.getPhoneNumber());
+        customer.setCountry(dto.getCountry());
         return customerRepository.save(customer);
     }
 

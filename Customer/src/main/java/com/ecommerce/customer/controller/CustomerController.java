@@ -56,22 +56,26 @@ public class CustomerController {
         if(principal == null) {
             return "redirect:/login";
         }
-        String username = principal.getName();
-        CustomerDto customer = customerService.getCustomer(username);
-        List<Country> countryList = countryService.findAll();
-        List<City> cities = cityService.findAll();
-        model.addAttribute("countries", countryList);
-        model.addAttribute("cities", cities);
+
         if (result.hasErrors()) {
+            List<Country> countryList = countryService.findAll();
+            List<City> cities = cityService.findAll();
+            model.addAttribute("countries", countryList);
+            model.addAttribute("cities", cities);
             return "customer-information";
         }
+
         customerService.update(customerDto);
+
+        // Retrieve the updated customer data from the database
         CustomerDto customerUpdate = customerService.getCustomer(principal.getName());
+
+        // Set flash attribute and redirect
         attributes.addFlashAttribute("success", "Update successfully!");
         model.addAttribute("customer", customerUpdate);
         return "redirect:/profile";
-
     }
+
 
     @GetMapping("/change-password")
     public String changePassword(Model model, Principal principal) {
