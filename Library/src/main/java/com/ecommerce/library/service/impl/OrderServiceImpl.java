@@ -50,8 +50,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> findAll(String username) {
         Customer customer = customerRepository.findByUsername(username);
-        List<Order> orders = customer.getOrders();
-        return orders;
+        return customer.getOrders();
     }
 
     @Override
@@ -61,11 +60,11 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Order acceptOrder(Long id) {
+    public void acceptOrder(Long id) {
         Order order = orderRepository.getById(id);
         order.setAccept(true);
         order.setDeliveryDate(new Date());
-        return orderRepository.save(order);
+        orderRepository.save(order);
     }
 
     @Override

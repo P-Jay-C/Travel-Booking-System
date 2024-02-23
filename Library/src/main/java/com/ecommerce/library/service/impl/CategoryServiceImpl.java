@@ -35,6 +35,11 @@ public class CategoryServiceImpl implements CategoryService {
     public Category update(Category category) {
         Category categoryUpdate = categoryRepository.getReferenceById(category.getId());
         categoryUpdate.setName(category.getName());
+        categoryUpdate.setCode(category.getCode());
+        categoryUpdate.setActivated(category.isActivated());
+        categoryUpdate.setIcon(categoryUpdate.getIcon());
+        categoryUpdate.setDescription(category.getDescription());
+        categoryUpdate.setDeleted(category.isDeleted());
         return categoryRepository.save(categoryUpdate);
     }
 
@@ -79,8 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getCategoriesAndSize() {
-        List<CategoryDto> categories = categoryRepository.getCategoriesAndSize();
-        return categories;
+        return categoryRepository.getCategoriesAndSize();
     }
 
 }
