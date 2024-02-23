@@ -4,6 +4,7 @@ import com.ecommerce.library.dto.CategoryDto;
 import com.ecommerce.library.model.Category;
 import com.ecommerce.library.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -44,10 +46,10 @@ public class CategoryController {
             model.addAttribute("categoryNew", category);
             redirectAttributes.addFlashAttribute("success", "Add successfully!");
         } catch (DataIntegrityViolationException e1) {
-            e1.printStackTrace();
+            log.error(e1.getMessage());
             redirectAttributes.addFlashAttribute("error", "Duplicate name of category, please check again!");
         } catch (Exception e2) {
-            e2.printStackTrace();
+            log.error(e2.getMessage());
             model.addAttribute("categoryNew", category);
             redirectAttributes.addFlashAttribute("error",
                     "Error server");
@@ -62,16 +64,16 @@ public class CategoryController {
         return categoryService.findById(id);
     }
 
-    @GetMapping("/update-category")
+    @PostMapping("/update-category")
     public String update(Category category, RedirectAttributes redirectAttributes) {
         try {
             categoryService.update(category);
             redirectAttributes.addFlashAttribute("success", "Update successfully!");
         } catch (DataIntegrityViolationException e1) {
-            e1.printStackTrace();
+
             redirectAttributes.addFlashAttribute("error", "Duplicate name of category, please check again!");
         } catch (Exception e2) {
-            e2.printStackTrace();
+            log.error(e2.getMessage());
             redirectAttributes.addFlashAttribute("error", "Error from server or duplicate name of category, please check again!");
         }
         return "redirect:/categories";
@@ -84,10 +86,10 @@ public class CategoryController {
             categoryService.deleteById(id);
             redirectAttributes.addFlashAttribute("success", "Deleted successfully!");
         } catch (DataIntegrityViolationException e1) {
-            e1.printStackTrace();
+            log.error(e1.getMessage());
             redirectAttributes.addFlashAttribute("error", "Duplicate name of category, please check again!");
         } catch (Exception e2) {
-            e2.printStackTrace();
+            log.error(e2.getMessage());
             redirectAttributes.addFlashAttribute("error", "Error server");
         }
         return "redirect:/categories";
@@ -99,10 +101,10 @@ public class CategoryController {
             categoryService.enableById(id);
             redirectAttributes.addFlashAttribute("success", "Enable successfully");
         } catch (DataIntegrityViolationException e1) {
-            e1.printStackTrace();
+            log.error(e1.getMessage());
             redirectAttributes.addFlashAttribute("error", "Duplicate name of category, please check again!");
         } catch (Exception e2) {
-            e2.printStackTrace();
+            log.error(e2.getMessage());
             redirectAttributes.addFlashAttribute("error", "Error server");
         }
         return "redirect:/categories";

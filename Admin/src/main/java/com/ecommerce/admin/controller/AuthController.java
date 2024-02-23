@@ -5,6 +5,7 @@ import com.ecommerce.library.model.Admin;
 import com.ecommerce.library.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     private final AdminService adminService;
 
@@ -85,7 +87,7 @@ public class AuthController {
                 System.out.println("password not same");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+           log.error(e.getMessage());
             model.addAttribute("errors", "The server has been wrong!");
         }
         return "register";
