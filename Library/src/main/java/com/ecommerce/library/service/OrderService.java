@@ -13,7 +13,7 @@ public interface OrderService {
 
     List<Order> findALlOrders();
 
-    Order acceptOrder(Long id);
+    void acceptOrder(Long id);
 
     void cancelOrder(Long id);
 }

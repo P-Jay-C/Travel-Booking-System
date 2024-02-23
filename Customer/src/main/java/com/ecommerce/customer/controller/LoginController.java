@@ -5,6 +5,7 @@ import com.ecommerce.library.model.Customer;
 import com.ecommerce.library.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 public class LoginController {
     private final CustomerService customerService;
@@ -60,7 +62,7 @@ public class LoginController {
                 return "register";
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
             model.addAttribute("error", "Server is error, try again later!");
         }
         return "register";

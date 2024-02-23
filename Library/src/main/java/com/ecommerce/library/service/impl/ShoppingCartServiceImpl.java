@@ -241,8 +241,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCart getCart(String username) {
         Customer customer = customerService.findByUsername(username);
-        ShoppingCart cart = customer.getCart();
-        return cart;
+        return customer.getCart();
     }
 
 
@@ -305,7 +304,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     private Product transfer(ProductDto productDto) {
-        Product product = new Product(); /// Remove Bracket
+        Product product = new Product();
         product.setId(productDto.getId());
         product.setName(productDto.getName());
         product.setCurrentQuantity(productDto.getCurrentQuantity());
@@ -324,7 +323,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         for (CartItemDto cartItemDto : cartItemDtos) {
             CartItem cartItem = new CartItem();
             cartItem.setQuantity(cartItemDto.getQuantity());
-//            cartItem.setProduct(transfer(cartItemDto.getProduct()));
+            cartItem.setProduct(transfer(cartItemDto.getProduct()));
             cartItem.setUnitPrice(cartItemDto.getUnitPrice());
             cartItem.setId(cartItemDto.getId());
             cartItem.setCart(cart);
