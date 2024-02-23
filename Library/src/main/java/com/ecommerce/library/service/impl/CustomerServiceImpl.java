@@ -1,9 +1,11 @@
 package com.ecommerce.library.service.impl;
 
+import com.ecommerce.library.Exception.BaseException;
 import com.ecommerce.library.Exception.EmailNotActiveException;
 import com.ecommerce.library.dto.CustomerDto;
 import com.ecommerce.library.model.Customer;
 import com.ecommerce.library.model.EmailDetails;
+import com.ecommerce.library.model.Provider;
 import com.ecommerce.library.repository.CustomerRepository;
 import com.ecommerce.library.repository.RoleRepository;
 import com.ecommerce.library.service.CustomerService;
@@ -21,6 +23,11 @@ public class CustomerServiceImpl implements CustomerService {
     private final EmailService emailService;
     @Override
     public Customer save(CustomerDto customerDto) {
+        // Check if the username already exists
+        if (customerRepository.existsByUsername(customerDto.getUsername())) {
+            throw new BaseException("500","Username already exists");
+        }
+
         Customer customer = new Customer();
         customer.setFirstName(customerDto.getFirstName());
         customer.setLastName(customerDto.getLastName());
@@ -29,9 +36,9 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setAddress(customerDto.getAddress());
         customer.setPhoneNumber(customerDto.getPhoneNumber());
         customer.setCountry(customerDto.getCountry());
-
         customer.setRoles(Arrays.asList(roleRepository.findByName("CUSTOMER")));
 
+        customer.setProviderId(Provider.local.name());
         // Send email alert
         EmailDetails emailDetails = EmailDetails.builder()
                 .recipient(customer.getUsername())
@@ -47,6 +54,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (!emailSent) {
             throw new EmailNotActiveException("Email not active");
         }
+
         return customerRepository.save(customer);
     }
 
@@ -76,7 +84,6 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setPassword(customerDto.getPassword());
         return customerRepository.save(customer);
     }
-
     @Override
     public Customer update(CustomerDto dto) {
         Customer customer = customerRepository.findByUsername(dto.getUsername());
@@ -89,5 +96,4 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setCountry(dto.getCountry());
         return customerRepository.save(customer);
     }
-
 }

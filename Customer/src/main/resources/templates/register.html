@@ -70,19 +70,23 @@
                         <label for="confirm">Verify Password:</label>
                         <input type="password" id="confirm" placeholder="Verify password" name="confirm" th:field="*{confirmPassword}" required>
                     </div>
+
                     <div class="input-form">
                         <p>Do You Already Have An Account? <a th:href="@{/login}">Sign in now</a></p>
                     </div>
-                    <div class="input-form">
-                        <input type="submit" value="Sign up">
-                    </div>
+
+                    <button type="submit" onclick="return validatePassword()">Submit</button>
+
+
                 </form>
                 <h3>Log In With Social Network</h3>
-                <ul class="icon-dang-nhap">
-                    <li><i class="fab fa-facebook-f"></i></li>
-                    <li><i class="fab fa-google"></i></li>
-                    <li><i class="fab fa-weibo"></i></li>
-                </ul>
+                <div class="social-login">
+                    <div class="social-icons">
+                        <a th:href="@{/oauth2/authorization/google}" class="social-login__icon fab fa-google">Google</a>
+                        <a th:href="@{/oauth2/authorization/facebook}"  class="social-login__icon fab fa-facebook">Facebook</a>
+                        <a th:href="@{/oauth2/authorization/github}" class="social-login__icon fab fa-twitter">GitHub</a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

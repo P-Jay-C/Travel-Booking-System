@@ -5,6 +5,8 @@ import com.ecommerce.library.model.ShoppingCart;
 import com.ecommerce.library.service.CustomerService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,9 @@ public class HomeController {
 
     @RequestMapping(value = {"/", "/index"}, method = RequestMethod.GET)
     public String home(Model model, Principal principal, HttpSession session) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        model.addAttribute("authentication", authentication);
         model.addAttribute("title", "Home");
         model.addAttribute("page", "Home");
         if (principal != null) {

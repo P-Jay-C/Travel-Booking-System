@@ -2,6 +2,7 @@ package com.ecommerce.customer.config;
 
 import com.ecommerce.library.model.Customer;
 import com.ecommerce.library.repository.CustomerRepository;
+import com.ecommerce.library.service.oauth2.Security.CustomOAuthUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -11,9 +12,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.stream.Collectors;
 
-public class CustomerServiceConfig implements UserDetailsService {
+public class CustomerDetailsService implements UserDetailsService {
     @Autowired
     private CustomerRepository customerRepository;
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Customer customer = customerRepository.findByUsername(username);

@@ -211,6 +211,19 @@
 	$(".brand-box").niceScroll({
 		cursorcolor: "#9b9b9c",
 	});
-	
-	
 }(jQuery));
+
+	function validatePassword() {
+            var password = document.getElementById("password").value;
+            var confirm = document.getElementById("confirm").value;
+
+            // Your password requirements regex
+            var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+            if (!password.match(passwordRegex)) {
+                alert("Password must be at least 8 characters with a combination of upper and lower case letters, special characters, and numbers.");
+                return false;
+            }
+
+            return true;
+        }

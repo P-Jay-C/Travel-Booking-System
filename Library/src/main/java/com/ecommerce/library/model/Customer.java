@@ -23,11 +23,11 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")
     private Long id;
+    private String providerId;
     private String firstName;
     private String lastName;
     @NotEmpty(message = "Email is required")
     private String username;
-    @NotEmpty(message = "Password is required")
     private String password;
     private String phoneNumber;
     private String address;
@@ -35,7 +35,7 @@ public class Customer {
     @JoinColumn(name = "name", referencedColumnName = "id")
     private City city;
     private String country;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     @JoinTable(name = "customer_role", joinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "customer_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id"))
     private Collection<Role> roles;
@@ -63,7 +63,7 @@ public class Customer {
                 ", address='" + address + '\'' +
                 ", city=" + city.getName() +
                 ", country='" + country + '\'' +
-                ", roles=" + roles +
+                ", roles=" + roles +(roles != null ? roles : "null") +
                 ", cart=" + cart.getId() +
                 ", orders=" + orders.size() +
                 '}';

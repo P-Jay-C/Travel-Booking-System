@@ -48,3 +48,16 @@ spring:
           google:
             clientId: 887617727653-btgm6o0tjbivq3rtrcjtqu1k9lgpmoms.apps.googleusercontent.com
             clientSecret: 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
+            scope:
+              - email
+              - profile
+          facebook:
+            clientId: 333500323008906
+            clientSecret: 8c842f183395bfaaf0c28c7b5b6acac7
+            scope:
+              - email
+              - public_profile
+            redirectUri:
+              - "http://localhost:8020/shop/login/oauth2/code/facebook"
+              - "http://localhost:8020/shop/login/facebook/code"
+              - "http://localhost:8020/shop/login/facebook/auth"
