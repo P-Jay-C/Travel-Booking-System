@@ -46,14 +46,14 @@ spring:
       client:
         registration:
           google:
-            clientId: 887617727653-btgm6o0tjbivq3rtrcjtqu1k9lgpmoms.apps.googleusercontent.com
-            clientSecret: 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
+            clientId: ${GOOGLE_CLIENT_ID}
+            clientSecret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - email
               - profile
           facebook:
-            clientId: 333500323008906
-            clientSecret: 8c842f183395bfaaf0c28c7b5b6acac7
+            clientId: ${FACEBOOK_CLIENT_ID}
+            clientSecret: ${FACEBOOK_CLIENT_SECRET}
             scope:
               - email
               - public_profile
