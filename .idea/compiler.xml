@@ -9,16 +9,24 @@
         <outputRelativeToContentRoot value="true" />
         <module name="config-server" />
         <module name="discovery-server" />
-        <module name="category-service" />
+        <module name="Customer" />
         <module name="booking-service" />
         <module name="api-gateway" />
-        <module name="user-service" />
+        <module name="Library" />
+        <module name="Admin" />
         <module name="notification-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="category-service" target="17" />
+      <module name="user-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Admin" options="-parameters" />
+      <module name="Customer" options="-parameters" />
+      <module name="Library" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
       <module name="booking-service" options="-parameters" />
       <module name="category-service" options="-parameters" />
