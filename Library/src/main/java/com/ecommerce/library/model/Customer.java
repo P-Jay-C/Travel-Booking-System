@@ -2,15 +2,12 @@ package com.ecommerce.library.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -46,26 +43,33 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Order> orders;
 
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<OldPassword> oldPasswords;
+
+    private boolean enabled = false;
+
     public Customer() {
         this.cart = new ShoppingCart();
         this.orders = new ArrayList<>();
+        this.oldPasswords = new HashSet<>();
     }
 
     @Override
     public String toString() {
         return "Customer{" +
                 "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", address='" + address + '\'' +
-                ", city=" + city.getName() +
-                ", country='" + country + '\'' +
-                ", roles=" + roles +(roles != null ? roles : "null") +
-                ", cart=" + cart.getId() +
-                ", orders=" + orders.size() +
+                ", firstName='" + (firstName != null ? firstName : "null") + '\'' +
+                ", lastName='" + (lastName != null ? lastName : "null") + '\'' +
+                ", username='" + (username != null ? username : "null") + '\'' +
+                ", password='" + (password != null ? password : "null") + '\'' +
+                ", phoneNumber='" + (phoneNumber != null ? phoneNumber : "null") + '\'' +
+                ", address='" + (address != null ? address : "null") + '\'' +
+                ", city=" + (city != null ? city.getName() : "null") +
+                ", country='" + (country != null ? country : "null") + '\'' +
+                ", roles=" + (roles != null ? roles : "null") +
+                ", cart=" + (cart != null ? cart.getId() : "null") +
+                ", orders=" + (orders != null ? orders.size() : "null") +
                 '}';
     }
+
 }

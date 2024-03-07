@@ -5,12 +5,14 @@ import com.ecommerce.library.Exception.EmailNotActiveException;
 import com.ecommerce.library.dto.CustomerDto;
 import com.ecommerce.library.model.Customer;
 import com.ecommerce.library.model.EmailDetails;
+import com.ecommerce.library.model.OldPassword;
 import com.ecommerce.library.model.Provider;
 import com.ecommerce.library.repository.CustomerRepository;
 import com.ecommerce.library.repository.RoleRepository;
 import com.ecommerce.library.service.CustomerService;
 import com.ecommerce.library.service.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.codec.KotlinSerializationBinaryEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -64,26 +66,19 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDto getCustomer(String username) {
+    public Customer getCustomer(String username) {
         CustomerDto customerDto = new CustomerDto();
-        Customer customer = customerRepository.findByUsername(username);
-        customerDto.setFirstName(customer.getFirstName());
-        customerDto.setLastName(customer.getLastName());
-        customerDto.setUsername(customer.getUsername());
-        customerDto.setPassword(customer.getPassword());
-        customerDto.setAddress(customer.getAddress());
-        customerDto.setPhoneNumber(customer.getPhoneNumber());
-        customerDto.setCity(customer.getCity());
-        customerDto.setCountry(customer.getCountry());
-        return customerDto;
+        //        customerDto.setFirstName(customer.getFirstName());
+//        customerDto.setLastName(customer.getLastName());
+//        customerDto.setUsername(customer.getUsername());
+//        customerDto.setPassword(customer.getPassword());
+//        customerDto.setAddress(customer.getAddress());
+//        customerDto.setPhoneNumber(customer.getPhoneNumber());
+//        customerDto.setCity(customer.getCity());
+//        customerDto.setCountry(customer.getCountry());
+        return customerRepository.findByUsername(username);
     }
 
-    @Override
-    public Customer changePass(CustomerDto customerDto) {
-        Customer customer = customerRepository.findByUsername(customerDto.getUsername());
-        customer.setPassword(customerDto.getPassword());
-        return customerRepository.save(customer);
-    }
     @Override
     public Customer update(CustomerDto dto) {
         Customer customer = customerRepository.findByUsername(dto.getUsername());
@@ -95,5 +90,20 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setPhoneNumber(dto.getPhoneNumber());
         customer.setCountry(dto.getCountry());
         return customerRepository.save(customer);
+    }
+
+    @Override
+    public void changePass(Customer customerDto, OldPassword oldPassword) {
+        Customer customer = customerRepository.findByUsername(customerDto.getUsername());
+
+        // Store the old password
+        if (oldPassword != null) {
+            customer.getOldPasswords().add(oldPassword);
+        }
+
+        // Update the current password by encoding the new password
+        customer.setPassword(customerDto.getPassword());
+
+        customerRepository.save(customer);
     }
 }

@@ -1,12 +1,15 @@
 package com.ecommerce.library.dto;
 
 import com.ecommerce.library.model.City;
+import com.ecommerce.library.model.OldPassword;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -29,4 +32,5 @@ public class CustomerDto {
     private City city;
     private String image;
     private String country;
+    private Set<OldPassword> oldPasswords;
 }

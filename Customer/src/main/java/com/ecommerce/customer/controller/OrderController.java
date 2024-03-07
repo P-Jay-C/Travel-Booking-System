@@ -32,7 +32,7 @@ public class OrderController {
         if (principal == null) {
             return "redirect:/login";
         } else {
-            CustomerDto customer = customerService.getCustomer(principal.getName());
+            Customer customer = customerService.getCustomer(principal.getName());
             if (customer.getAddress() == null || customer.getCity() == null || customer.getPhoneNumber() == null) {
                 model.addAttribute("information", "You need update your information before check out");
                 List<Country> countryList = countryService.findAll();
