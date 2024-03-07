@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@Slf4j
 public class LoginController {
     private final CustomerService customerService;
     private final PasswordEncoder passwordEncoder;
