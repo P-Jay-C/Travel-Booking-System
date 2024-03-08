@@ -92,19 +92,28 @@ public class CustomerController {
     }
 
     @PostMapping("/change-password")
-    public String changePass(@ModelAttribute ChangePasswordRequest changePasswordRequest,
-                             RedirectAttributes attributes,
-                             Principal principal,Model model) {
+    public String changePass(@ModelAttribute @Valid ChangePasswordRequest changePasswordRequest,
+                             BindingResult bindingResult,
+                             Principal principal, Model model) {
         if (principal == null) {
             return "redirect:/login";
         }
 
         Customer customer = customerService.getCustomer(principal.getName());
 
-        if (!isPasswordChangeValid(customer, changePasswordRequest, attributes)) {
-            return "redirect:/profile";
+        // Check for validation errors
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("passwordChangeRequest", changePasswordRequest);
+            return "change-password";
         }
 
+        // Check for other password change validations
+        if (!isPasswordChangeValid(customer, changePasswordRequest, model)) {
+            model.addAttribute("passwordChangeRequest", changePasswordRequest);
+            return "change-password";
+        }
+
+        // Process the password change
         OldPassword oldPassword = OldPassword.builder()
                 .customer(customer)
                 .password(passwordEncoder.encode(changePasswordRequest.getNewPassword()))
@@ -114,30 +123,43 @@ public class CustomerController {
         customer.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         customerService.changePass(customer, oldPassword);
 
-        attributes.addFlashAttribute("success", "Your password has been changed successfully!");
-        model.addAttribute("passwordChangeRequest", changePasswordRequest);
+        model.addAttribute("success", "Your password has been changed successfully!");
         return "redirect:/profile";
     }
 
-    private boolean isPasswordChangeValid(Customer customer, ChangePasswordRequest changePasswordRequest, RedirectAttributes attributes) {
+    private boolean isPasswordChangeValid(Customer customer, ChangePasswordRequest changePasswordRequest, Model model) {
+        // Check for other password change validations
         if (isPasswordReused(customer, changePasswordRequest.getNewPassword())) {
-            attributes.addFlashAttribute("error", "You cannot reuse old passwords.");
+            model.addAttribute("error", "You cannot reuse old passwords.");
             return false;
         }
 
-        if (passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), customer.getPassword())
-                && !passwordEncoder.matches(changePasswordRequest.getNewPassword(), changePasswordRequest.getCurrentPassword())
-                && changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmationPassword())
-                && changePasswordRequest.getNewPassword().length() >= 5) {
-            return true;
-        } else {
-            attributes.addFlashAttribute("error", "Invalid password change request.");
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), customer.getPassword())) {
+            model.addAttribute("error", "Incorrect current password.");
             return false;
         }
+
+        if (passwordEncoder.matches(changePasswordRequest.getNewPassword(), changePasswordRequest.getCurrentPassword())) {
+            model.addAttribute("error", "New password must be different from the current password.");
+            return false;
+        }
+
+        if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmationPassword())) {
+            model.addAttribute("error", "Confirmation password does not match.");
+            return false;
+        }
+
+        if (changePasswordRequest.getNewPassword().length() < 5) {
+            model.addAttribute("error", "New password must be at least 5 characters long.");
+            return false;
+        }
+
+        return true;
     }
 
     private boolean isPasswordReused(Customer customer, String newPassword) {
         return customer.getOldPasswords().stream()
                 .anyMatch(oldPassword -> passwordEncoder.matches(newPassword, oldPassword.getPassword()));
     }
+
 }
