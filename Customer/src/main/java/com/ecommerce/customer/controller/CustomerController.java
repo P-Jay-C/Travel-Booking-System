@@ -11,7 +11,6 @@ import com.ecommerce.library.service.CountryService;
 import com.ecommerce.library.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -141,5 +140,4 @@ public class CustomerController {
         return customer.getOldPasswords().stream()
                 .anyMatch(oldPassword -> passwordEncoder.matches(newPassword, oldPassword.getPassword()));
     }
-
 }

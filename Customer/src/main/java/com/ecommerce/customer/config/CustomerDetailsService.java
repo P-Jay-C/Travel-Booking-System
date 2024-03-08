@@ -25,6 +25,10 @@ public class CustomerDetailsService implements UserDetailsService {
         }
         return new User(customer.getUsername(),
                 customer.getPassword(),
+                customer.isEnabled(),
+                true,
+                true,
+                true,
                 customer.getRoles()
                         .stream()
                         .map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
