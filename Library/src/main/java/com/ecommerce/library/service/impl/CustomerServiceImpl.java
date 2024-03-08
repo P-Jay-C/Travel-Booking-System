@@ -3,26 +3,28 @@ package com.ecommerce.library.service.impl;
 import com.ecommerce.library.Exception.BaseException;
 import com.ecommerce.library.Exception.EmailNotActiveException;
 import com.ecommerce.library.dto.CustomerDto;
-import com.ecommerce.library.model.Customer;
-import com.ecommerce.library.model.EmailDetails;
-import com.ecommerce.library.model.OldPassword;
-import com.ecommerce.library.model.Provider;
+import com.ecommerce.library.model.*;
 import com.ecommerce.library.repository.CustomerRepository;
 import com.ecommerce.library.repository.RoleRepository;
+import com.ecommerce.library.repository.VerificationTokenRepository;
 import com.ecommerce.library.service.CustomerService;
 import com.ecommerce.library.service.EmailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.codec.KotlinSerializationBinaryEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final RoleRepository roleRepository;
-    private final EmailService emailService;
+
+    @Autowired
+    private VerificationTokenRepository verificationTokenRepository;
     @Override
     public Customer save(CustomerDto customerDto) {
         // Check if the username already exists
@@ -41,21 +43,6 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setRoles(Arrays.asList(roleRepository.findByName("CUSTOMER")));
 
         customer.setProviderId(Provider.local.name());
-        // Send email alert
-        EmailDetails emailDetails = EmailDetails.builder()
-                .recipient(customer.getUsername())
-                .subject("ACCOUNT CREATION")
-                .messageBody("Dear " + customer.getFirstName() + " " + customer.getLastName() + ",\n\n"
-                        + "Congratulations! Your account has been successfully created.\n\n"
-                        + "Thank you for choosing our services.\n\n"
-                        + "Best regards,\n The Best Travel Centre")
-                .build();
-
-        boolean emailSent = emailService.sendEmailAlert(emailDetails);
-
-        if (!emailSent) {
-            throw new EmailNotActiveException("Email not active");
-        }
 
         return customerRepository.save(customer);
     }
@@ -67,15 +54,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getCustomer(String username) {
-        CustomerDto customerDto = new CustomerDto();
-        //        customerDto.setFirstName(customer.getFirstName());
-//        customerDto.setLastName(customer.getLastName());
-//        customerDto.setUsername(customer.getUsername());
-//        customerDto.setPassword(customer.getPassword());
-//        customerDto.setAddress(customer.getAddress());
-//        customerDto.setPhoneNumber(customer.getPhoneNumber());
-//        customerDto.setCity(customer.getCity());
-//        customerDto.setCountry(customer.getCountry());
         return customerRepository.findByUsername(username);
     }
 
@@ -106,4 +84,55 @@ public class CustomerServiceImpl implements CustomerService {
 
         customerRepository.save(customer);
     }
+
+    @Override
+    public void saveVerificationTokenForUser(String token, Customer user) {
+
+        VerificationToken verificationToken = new VerificationToken(user, token);
+
+        verificationTokenRepository.save(verificationToken);
+
+    }
+
+    @Override
+    public String validateVerificationToken(String token) {
+
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
+
+        if (verificationToken == null) {
+            return "invalid";
+        }
+
+        Customer user = verificationToken.getCustomer();
+        Calendar calendar = Calendar.getInstance();
+
+        if ((verificationToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
+            verificationTokenRepository.delete(verificationToken);
+            return "expired";
+        }
+
+        user.setEnabled(true);
+        customerRepository.save(user);
+
+        return "valid";
+    }
+
+    @Override
+    public VerificationToken generateNewVerificationToken(String oldToken) {
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(oldToken);
+
+        if (verificationToken != null) {
+            verificationToken.setToken(UUID.randomUUID().toString());
+            verificationTokenRepository.save(verificationToken);
+        }
+
+        return verificationToken;
+    }
+
+    @Override
+    public Customer findUserByEmail(String email) {
+
+        return customerRepository.findByUsername(email);
+    }
+
 }

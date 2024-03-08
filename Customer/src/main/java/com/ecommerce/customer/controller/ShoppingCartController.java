@@ -57,6 +57,7 @@ public class ShoppingCartController {
         if (principal == null) {
             return "redirect:/login";
         }
+
         String username = principal.getName();
         ShoppingCart shoppingCart = cartService.addItemToCart(productDto, quantity, username);
         session.setAttribute("totalItems", shoppingCart.getTotalItems());
