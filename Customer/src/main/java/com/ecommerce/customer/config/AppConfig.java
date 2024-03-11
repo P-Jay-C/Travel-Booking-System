@@ -3,11 +3,10 @@ package com.ecommerce.customer.config;
 import com.ecommerce.library.service.oauth2.Security.CustomOAuthUserDetailService;
 import com.ecommerce.library.service.oauth2.Security.handler.CustomOAuth2FailureHandler;
 import com.ecommerce.library.service.oauth2.Security.handler.CustomOAuth2SuccessHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,24 +18,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class AppConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
         return new CustomerDetailsService();
     }
-
-    @Autowired
-    private CustomOAuthUserDetailService customOAuthUserDetailService;
-    @Autowired
-    private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
-    @Autowired
-    private CustomOAuth2FailureHandler customOAuth2FailureHandler;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {

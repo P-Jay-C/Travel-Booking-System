@@ -13,14 +13,17 @@ public class OAuth2UserDetailCustom implements OAuth2User, UserDetails {
     private String username;
 
     private String password;
+
+    private boolean enabled = true;
     private List<GrantedAuthority> authorities;
 
     private Map<String, Object> attributes;
 
-    public OAuth2UserDetailCustom(Long id, String username, String password, List<GrantedAuthority> authorities) {
+    public OAuth2UserDetailCustom(Long id, String username, String password, List<GrantedAuthority> authorities,boolean enabled) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.enabled = enabled;
         this.authorities = authorities;
     }
 
@@ -51,7 +54,7 @@ public class OAuth2UserDetailCustom implements OAuth2User, UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     @Override
