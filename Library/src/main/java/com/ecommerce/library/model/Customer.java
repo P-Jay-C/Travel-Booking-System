@@ -71,5 +71,4 @@ public class Customer {
                 ", orders=" + (orders != null ? orders.size() : "null") +
                 '}';
     }
-
 }
