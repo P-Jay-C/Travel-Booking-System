@@ -3,9 +3,10 @@ package com.ecommerce.customer.controller;
 import com.ecommerce.library.dto.CustomerDto;
 import com.ecommerce.library.event.RegistrationCompleteEvent;
 import com.ecommerce.library.model.Customer;
-import com.ecommerce.library.model.VerificationToken;
 import com.ecommerce.library.service.CustomerService;
+import com.ecommerce.library.service.ShoppingCartService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
     private final CustomerService customerService;
     private final PasswordEncoder passwordEncoder;
+    private final ShoppingCartService shoppingCartService;
     @Autowired
     private ApplicationEventPublisher publisher;
 
@@ -57,7 +59,8 @@ public class LoginController {
     public String registerCustomer(@Valid @ModelAttribute("customerDto") CustomerDto customerDto,
                                    BindingResult result,
                                    Model model,
-                                   final HttpServletRequest request) {
+                                   final HttpServletRequest request,
+                                   HttpSession session) {
         try {
             // Check for validation errors
             if (result.hasErrors()) {
@@ -82,17 +85,16 @@ public class LoginController {
 
             // Encode the password and save the customer
             customerDto.setPassword(passwordEncoder.encode(customerDto.getPassword()));
-            Customer customer  = customerService.save(customerDto);
+            Customer customer = customerService.save(customerDto);
 
             // Add success message
             model.addAttribute("success", "Registration successful!");
 
+            // Associate user with session after authentication
+            shoppingCartService.associateUserWithSessionAfterAuthentication(session.getId(), customer);
+
             // Publish registration completion event
-            publisher.publishEvent(
-                    new RegistrationCompleteEvent(
-                            customer,
-                            applicationUrl(request)
-                    ));
+            publisher.publishEvent(new RegistrationCompleteEvent(customer, applicationUrl(request)));
 
             // Return the view
             return "register";
@@ -103,6 +105,7 @@ public class LoginController {
             return "register";
         }
     }
+
 
     @GetMapping("/verifyRegistration")
     public String verifyRegistration(@RequestParam("token") String token){

@@ -8,6 +8,8 @@ import com.ecommerce.library.model.VerificationToken;
 public interface CustomerService {
     Customer save(CustomerDto customerDto);
 
+    Customer save(Customer customerDto);
+
     Customer findByUsername(String username);
 
     Customer update(CustomerDto customerDto);

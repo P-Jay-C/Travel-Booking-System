@@ -40,11 +40,17 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setAddress(customerDto.getAddress());
         customer.setPhoneNumber(customerDto.getPhoneNumber());
         customer.setCountry(customerDto.getCountry());
+
         customer.setRoles(Arrays.asList(roleRepository.findByName("CUSTOMER")));
 
         customer.setProviderId(Provider.local.name());
 
         return customerRepository.save(customer);
+    }
+
+    @Override
+    public Customer save(Customer customerDto) {
+        return customerRepository.save(customerDto);
     }
 
     @Override

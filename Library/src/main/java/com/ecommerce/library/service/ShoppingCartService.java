@@ -2,6 +2,7 @@ package com.ecommerce.library.service;
 
 import com.ecommerce.library.dto.ProductDto;
 import com.ecommerce.library.dto.ShoppingCartDto;
+import com.ecommerce.library.model.Customer;
 import com.ecommerce.library.model.ShoppingCart;
 
 public interface ShoppingCartService {
@@ -23,4 +24,6 @@ public interface ShoppingCartService {
     void deleteCartById(Long id);
 
     ShoppingCart getCart(String username);
+
+    void associateUserWithSessionAfterAuthentication(String sessionId, Customer authenticatedUser);
 }

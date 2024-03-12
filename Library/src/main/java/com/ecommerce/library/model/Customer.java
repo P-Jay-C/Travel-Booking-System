@@ -37,7 +37,9 @@ public class Customer {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id"))
     private Collection<Role> roles;
 
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+//    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "shopping_cart_id")
     private ShoppingCart cart;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)

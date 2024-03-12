@@ -18,15 +18,15 @@ public class ShoppingCart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shopping_cart_id")
     private Long id;
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "cart")
     private Customer customer;
 
     private double totalPrice;
 
     private int totalItems;
 
-    @OneToMany(cascade = CascadeType.DETACH, mappedBy = "cart")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cart", orphanRemoval = true)
     private Set<CartItem> cartItems;
 
     public ShoppingCart() {
@@ -39,7 +39,7 @@ public class ShoppingCart {
     public String toString() {
         return "ShoppingCart{" +
                 "id=" + id +
-                ", customer=" + customer.getUsername() +
+                ", customer=" + (customer != null ? customer.getUsername() : null) +
                 ", totalPrice=" + totalPrice +
                 ", totalItems=" + totalItems +
                 ", cartItems=" + cartItems.size() +

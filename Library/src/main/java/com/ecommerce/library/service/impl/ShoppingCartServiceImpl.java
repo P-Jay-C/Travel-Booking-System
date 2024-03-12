@@ -1,17 +1,18 @@
 package com.ecommerce.library.service.impl;
 
+import com.ecommerce.library.Exception.ShoppingCartException;
 import com.ecommerce.library.dto.CartItemDto;
 import com.ecommerce.library.dto.ProductDto;
 import com.ecommerce.library.dto.ShoppingCartDto;
-import com.ecommerce.library.model.CartItem;
-import com.ecommerce.library.model.Customer;
-import com.ecommerce.library.model.Product;
-import com.ecommerce.library.model.ShoppingCart;
+import com.ecommerce.library.model.*;
 import com.ecommerce.library.repository.CartItemRepository;
 import com.ecommerce.library.repository.ShoppingCartRepository;
+import com.ecommerce.library.repository.UserSessionRepository;
 import com.ecommerce.library.service.CustomerService;
 import com.ecommerce.library.service.ShoppingCartService;
+import com.ecommerce.library.service.UserSessionService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -28,16 +30,33 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final CartItemRepository itemRepository;
 
     private final CustomerService customerService;
+    private final UserSessionService userSessionService;
+    private  final UserSessionRepository userSessionRepository;
+
 
     @Override
     @Transactional
     public ShoppingCart addItemToCart(ProductDto productDto, int quantity, String username) {
+        ShoppingCart shoppingCart;
         Customer customer = customerService.findByUsername(username);
-        ShoppingCart shoppingCart = customer.getCart();
 
-        if (shoppingCart == null) {
-            shoppingCart = new ShoppingCart();
+        // Retrieve the existing shopping cart or create a new one
+        if (customer != null) {
+            shoppingCart = customer.getCart();
+        } else {
+            UserSession userSession = userSessionService.getUserSession(username);
+
+            if (userSession == null) {
+                shoppingCart = new ShoppingCart();
+            } else {
+                shoppingCart = userSession.getShoppingCart();
+
+                if (shoppingCart == null) {
+                    shoppingCart = new ShoppingCart();
+                }
+            }
         }
+
         Set<CartItem> cartItemList = shoppingCart.getCartItems();
         CartItem cartItem = find(cartItemList, productDto.getId());
         Product product = transfer(productDto);
@@ -89,17 +108,28 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return cartRepository.save(shoppingCart);
     }
 
+
     @Override
     @Transactional
     public ShoppingCart updateCart(ProductDto productDto, int quantity, String username) {
         Customer customer = customerService.findByUsername(username);
-        ShoppingCart shoppingCart = customer.getCart();
-        Set<CartItem> cartItemList = shoppingCart.getCartItems();
+        ShoppingCart shoppingCart;
+        Set<CartItem> cartItemList;
+
+        if (customer != null) {
+            shoppingCart = customer.getCart();
+        } else {
+            UserSession userSession = userSessionService.getUserSession(username);
+            if (userSession == null) {
+                throw new ShoppingCartException("User session not found.");
+            }
+            shoppingCart = userSession.getShoppingCart();
+        }
+
+        cartItemList = shoppingCart.getCartItems();
         CartItem item = find(cartItemList, productDto.getId());
-        int itemQuantity = quantity;
 
-
-        item.setQuantity(itemQuantity);
+        item.setQuantity(quantity);
         itemRepository.save(item);
         shoppingCart.setCartItems(cartItemList);
         int totalItem = totalItem(cartItemList);
@@ -113,8 +143,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ShoppingCart removeItemFromCart(ProductDto productDto, String username) {
         Customer customer = customerService.findByUsername(username);
-        ShoppingCart shoppingCart = customer.getCart();
-        Set<CartItem> cartItemList = shoppingCart.getCartItems();
+         ShoppingCart shoppingCart;
+        Set<CartItem> cartItemList;
+
+        if (customer != null) {
+            shoppingCart = customer.getCart();
+        } else {
+            UserSession userSession = userSessionService.getUserSession(username);
+            if (userSession == null) {
+                throw new ShoppingCartException("User session not found.");
+            }
+            shoppingCart = userSession.getShoppingCart();
+        }
+
+        cartItemList = shoppingCart.getCartItems();
         CartItem item = find(cartItemList, productDto.getId());
         cartItemList.remove(item);
         itemRepository.delete(item);
@@ -129,40 +171,32 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartDto addItemToCartSession(ShoppingCartDto cartDto, ProductDto productDto, int quantity) {
         CartItemDto cartItem = findInDTO(cartDto, productDto.getId());
+
         if (cartDto == null) {
             cartDto = new ShoppingCartDto();
         }
+
         Set<CartItemDto> cartItemList = cartDto.getCartItems();
         double unitPrice = productDto.getCostPrice();
         int itemQuantity = 0;
+
         if (cartItemList == null) {
             cartItemList = new HashSet<>();
-            if (cartItem == null) {
-                cartItem = new CartItemDto();
-                cartItem.setProduct(productDto);
-                cartItem.setCart(cartDto);
-                cartItem.setQuantity(quantity);
-                cartItem.setUnitPrice(unitPrice);
-                cartItemList.add(cartItem);
-                System.out.println("add");
-            } else {
-                itemQuantity = cartItem.getQuantity() + quantity;
-                cartItem.setQuantity(itemQuantity);
-            }
-        } else {
-            if (cartItem == null) {
-                cartItem = new CartItemDto();
-                cartItem.setProduct(productDto);
-                cartItem.setCart(cartDto);
-                cartItem.setQuantity(quantity);
-                cartItem.setUnitPrice(unitPrice);
-                cartItemList.add(cartItem);
-                System.out.println("add");
-            } else {
-                itemQuantity = cartItem.getQuantity() + quantity;
-                cartItem.setQuantity(itemQuantity);
-            }
         }
+
+        if (cartItem == null) {
+            cartItem = new CartItemDto();
+            cartItem.setProduct(productDto);
+            cartItem.setCart(cartDto);
+            cartItem.setQuantity(quantity);
+            cartItem.setUnitPrice(unitPrice);
+            cartItemList.add(cartItem);
+            System.out.println("add");
+        } else {
+            itemQuantity = cartItem.getQuantity() + quantity;
+            cartItem.setQuantity(itemQuantity);
+        }
+
         System.out.println("here");
         cartDto.setCartItems(cartItemList);
         double totalPrice = totalPriceDto(cartItemList);
@@ -209,14 +243,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (cart == null) {
             cart = new ShoppingCart();
         }
+
         Set<CartItem> cartItems = cart.getCartItems();
+
         if (cartItems == null) {
             cartItems = new HashSet<>();
         }
+
         Set<CartItem> cartItemsDto = convertCartItem(cartDto.getCartItems(), cart);
-        for (CartItem cartItem : cartItemsDto) {
-            cartItems.add(cartItem);
-        }
+        cartItems.addAll(cartItemsDto);
         double totalPrice = totalPrice(cartItems);
         int totalItems = totalItem(cartItems);
         cart.setTotalItems(totalItems);
@@ -229,9 +264,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public void deleteCartById(Long id) {
         ShoppingCart shoppingCart = cartRepository.getById(id);
-        if(!ObjectUtils.isEmpty(shoppingCart) && !ObjectUtils.isEmpty(shoppingCart.getCartItems())){
+
+        if (!ObjectUtils.isEmpty(shoppingCart) && !ObjectUtils.isEmpty(shoppingCart.getCartItems())) {
             itemRepository.deleteAll(shoppingCart.getCartItems());
         }
+
         shoppingCart.getCartItems().clear();
         shoppingCart.setTotalPrice(0);
         shoppingCart.setTotalItems(0);
@@ -243,7 +280,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Customer customer = customerService.findByUsername(username);
         return customer.getCart();
     }
-
 
     private CartItem find(Set<CartItem> cartItems, long productId) {
         if (cartItems == null) {
@@ -330,5 +366,41 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             cartItems.add(cartItem);
         }
         return cartItems;
+    }
+
+    public void associateUserWithSessionAfterAuthentication(String sessionId, Customer authenticatedUser) {
+        if (authenticatedUser != null) {
+            UserSession userSession = userSessionRepository.findBySessionId(sessionId);
+
+            if (userSession != null) {
+                ShoppingCart userSessionCart = userSession.getShoppingCart();
+                Set<CartItem> userSessionCartItems = userSessionCart != null ? userSessionCart.getCartItems() : null;
+
+                if (userSessionCartItems != null && !userSessionCartItems.isEmpty()) {
+                    ShoppingCart customerCart = authenticatedUser.getCart();
+
+                    if (customerCart == null) {
+                        // Initialize the cart if it is null
+                        customerCart = new ShoppingCart();
+                        authenticatedUser.setCart(customerCart);
+                        customerService.save(authenticatedUser);
+                    }
+
+                    // Set the session cart items to the customer's cart
+                    customerCart.setCartItems(userSessionCartItems);
+
+                    // Update total price and items for the customer's cart
+                    customerCart.setTotalPrice(totalPrice(userSessionCartItems));
+                    customerCart.setTotalItems(totalItem(userSessionCartItems));
+
+                    // Save the updated customer entity with the associated cart
+                    authenticatedUser.setCart(customerCart);
+                    customerService.save(authenticatedUser);
+
+                    // userSession.setShoppingCart(null);
+                    userSessionRepository.save(userSession);
+                }
+            }
+        }
     }
 }
