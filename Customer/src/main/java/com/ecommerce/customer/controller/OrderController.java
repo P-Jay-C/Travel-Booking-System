@@ -33,7 +33,8 @@ public class OrderController {
             return "redirect:/login";
         } else {
             Customer customer = customerService.getCustomer(principal.getName());
-            if (customer.getAddress() == null || customer.getCity() == null || customer.getPhoneNumber() == null) {
+//            if (customer.getAddress() == null || customer.getCity() == null || customer.getPhoneNumber() == null) {
+            if (customer.getPhoneNumber() == null) {
                 model.addAttribute("information", "You need update your information before check out");
                 List<Country> countryList = countryService.findAll();
                 List<City> cities = cityService.findAll();
